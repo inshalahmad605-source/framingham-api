@@ -1,0 +1,107 @@
+# LOVABLE PROMPT — Framingham Heart Study CHD Risk Predictor
+# Paste this entire prompt into lovable.dev to generate your frontend
+
+---
+
+Build a modern medical web app called **"Framingham Heart Risk Predictor"** that connects to a Flask REST API.
+
+## API Base URL
+Replace `YOUR_RENDER_URL` with your actual Render deployment URL, e.g.:
+`https://framingham-chd-predictor.onrender.com`
+
+## Design Style
+- Dark medical theme: deep navy (#0f1b2d) background, white cards
+- Red accent (#e74c3c) for risk, green (#27ae60) for safe
+- Clean, professional healthcare look — similar to a hospital dashboard
+- Fully responsive (mobile + desktop)
+- Use Tailwind CSS
+
+## App Structure: Two tabs
+
+### Tab 1: ❤️ CHD Risk Prediction (Classification)
+A form with these fields (all required):
+
+**Demographics section:**
+- Sex: dropdown (Male=1 / Female=0)
+- Age: number input (20–80)
+- Education Level: dropdown (1=Some High School, 2=High School/GED, 3=Some College, 4=College Degree+)
+
+**Smoking section:**
+- Current Smoker: toggle/dropdown (Yes=1 / No=0)
+- Cigarettes Per Day: number (0–70, disabled if not smoker)
+- On BP Medication: toggle (Yes=1 / No=0)
+
+**Medical History section:**
+- Prevalent Stroke: toggle (Yes=1 / No=0)
+- Prevalent Hypertension: toggle (Yes=1 / No=0)
+- Diabetes: toggle (Yes=1 / No=0)
+
+**Clinical Measurements section:**
+- Total Cholesterol (mg/dL): number (100–600)
+- Systolic Blood Pressure (mmHg): number (80–300)
+- Diastolic Blood Pressure (mmHg): number (40–200)
+- BMI: decimal number (10–60)
+- Heart Rate (bpm): number (30–200)
+- Glucose (mg/dL): number (40–400)
+
+**Predict button** → POST to `{API_URL}/predict` with JSON:
+```json
+{
+  "male": 1, "age": 55, "education": 2,
+  "currentSmoker": 1, "cigsPerDay": 20,
+  "BPMeds": 0, "prevalentStroke": 0,
+  "prevalentHyp": 1, "diabetes": 0,
+  "totChol": 250, "sysBP": 145, "diaBP": 90,
+  "BMI": 28.5, "heartRate": 80, "glucose": 95
+}
+```
+
+**Result display (animated card):**
+- If prediction=1: red card with ⚠️ "10-Year CHD Risk Detected", confidence %, two progress bars (No Risk % | At Risk %)
+- If prediction=0: green card with ✅ "Low CHD Risk", same bars
+- Show a disclaimer: "This is an ML prediction for educational purposes only. Consult a doctor."
+
+---
+
+### Tab 2: 🩸 Glucose Level Prediction (Regression)
+Same demographic + clinical fields EXCEPT:
+- Remove the Glucose input
+- Add: "Known 10-Year CHD" toggle (Yes=1 / No=0)
+
+**Predict button** → POST to `{API_URL}/predict_glucose` with JSON:
+```json
+{
+  "male": 1, "age": 55, "education": 2,
+  "currentSmoker": 1, "cigsPerDay": 20,
+  "BPMeds": 0, "prevalentStroke": 0,
+  "prevalentHyp": 1, "diabetes": 0,
+  "totChol": 250, "sysBP": 145, "diaBP": 90,
+  "BMI": 28.5, "heartRate": 80, "TenYearCHD": 0
+}
+```
+
+**Result display:**
+- Show predicted glucose value in large text (e.g. "87.4 mg/dL")
+- Color-coded badge: green "Normal" (<100), yellow "Pre-diabetic" (100–125), red "Diabetic Range" (≥126)
+- A simple gauge/meter visual showing where the value falls
+
+---
+
+## Bottom Section: About the Models
+Two cards side by side:
+- **Classification Models (10):** KNN, Decision Tree, Random Forest, SVM, Naive Bayes, AdaBoost, Gradient Boosting, XGBoost, Logistic Regression, ANN — *Best selected by Recall*
+- **Regression Models (6):** Linear Regression, Ridge, Random Forest Regressor, SVR, Gradient Boosting Regressor, ANN — *Best selected by R² Score*
+
+Also show: "Dataset: Framingham Heart Study · 4240 patients · 16 features · SMOTE used for class imbalance"
+
+---
+
+## API Error Handling
+- If the API returns an error, show a red toast notification
+- If the API is unreachable, show: "⚠️ API offline. Please check the server." with a retry button
+- Add a loading spinner on the button while waiting for the response
+
+## Header
+- App name: "Framingham Heart Risk Predictor"
+- Subtitle: "Powered by 10 ML Classification + 6 Regression Models"
+- Small badge: "Framingham Heart Study Dataset"
